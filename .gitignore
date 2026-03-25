@@ -67,3 +67,6 @@ dist
 test-results.xml
 
 .pnpm-store/
+
+# docs
+docs

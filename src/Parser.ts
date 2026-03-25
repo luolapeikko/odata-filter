@@ -17,7 +17,7 @@ export class Parser {
     public parse(): AstNode {
         const node = this.parseOr();
         if (this.pos < this.tokens.length) {
-            throw new Error(`Unexpected token '${this.tokens[this.pos].value}' at position ${this.pos}`);
+            throw new Error(`Unexpected token '${this.tokens[this.pos]?.value}' at position ${this.pos}`);
         }
         return node;
     }
@@ -27,7 +27,11 @@ export class Parser {
     }
 
     private advance(): Token {
-        return this.tokens[this.pos++];
+        const token = this.tokens[this.pos++];
+        if (!token) {
+            throw new Error('Unexpected end of input');
+        }
+        return token;
     }
 
     private expect(type: TokenType, value?: string): Token {

@@ -261,6 +261,12 @@ describe('buildODataFilter', () => {
 	});
 
 	describe('edge cases', () => {
+		it('shuold return false if property is not matching to data', () => {
+			const filter = buildODataFilter<any>("name eq 'John'");
+			expect(filter({age: 30})).toBe(false);
+      expect(filter({name: null})).toBe(false);
+      expect(filter({})).toBe(false);
+		});
 		it('should throw on malformed filter syntax', () => {
 			expect(() => buildODataFilter('name eq John'), 'missing quotes around string literal').toThrow();
 			expect(() => buildODataFilter("name = 'John'"), 'unsupported operator').toThrow();
@@ -292,7 +298,10 @@ describe('buildODataFilter', () => {
 
 		it('should coerce objects with custom toString (e.g. ObjectId)', () => {
 			class ObjectId {
-				public constructor(private id: string) {}
+				private id: string;
+				public constructor(id: string) {
+					this.id = id;
+				}
 				public toString() {
 					return this.id;
 				}

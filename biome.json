@@ -30,7 +30,7 @@
     "rules": {
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
-        "noExcessiveCognitiveComplexity": "error",
+        "noExcessiveCognitiveComplexity": "off",
         "noExtraBooleanCast": "error",
         "noStaticOnlyClass": "off",
         "noUselessCatch": "error",

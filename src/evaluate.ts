@@ -96,7 +96,7 @@ function toMs(v: unknown): number {
 	if (typeof v === 'string') {
 		return new Date(v).getTime();
 	}
-	return NaN;
+	return Number.NaN;
 }
 
 function toStr(v: unknown): unknown {
@@ -129,7 +129,8 @@ export function evaluate(node: AstNode, data: Record<string, unknown>): unknown 
 				left = toStr(left);
 				right = toStr(right);
 			}
-			switch (node.operator) {
+			const operator = node.operator;
+			switch (operator) {
 				case 'eq':
 					return left === right;
 				case 'ne':
@@ -142,8 +143,9 @@ export function evaluate(node: AstNode, data: Record<string, unknown>): unknown 
 					return (left as number) < (right as number);
 				case 'le':
 					return (left as number) <= (right as number);
+				default:
+					throw new Error(`Unsupported operator '${operator satisfies never}'`);
 			}
-			break;
 		}
 
 		case 'lambda': {
