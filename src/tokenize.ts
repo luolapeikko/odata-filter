@@ -4,25 +4,30 @@ const ISO_DATETIME_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?
 const whiteSpaceChars = new Set([' ', '\t', '\r', '\n']);
 
 function charTokens(char: string, tokens: Token[]): number {
+    let index = 0;
 	switch (char) {
 		case '(':
 			tokens.push({type: 'lparen', value: '('});
-			return 1;
+            index++;
+			break;
 		case ')':
 			tokens.push({type: 'rparen', value: ')'});
-			return 1;
+			index++;
+			break;
 		case ',':
 			tokens.push({type: 'comma', value: ','});
-			return 1;
+			index++;
+			break;
 		case '/':
 			tokens.push({type: 'slash', value: '/'});
-			return 1;
+			index++;
+			break;
 		case ':':
 			tokens.push({type: 'colon', value: ':'});
-			return 1;
-		default:
-			return 0;
+			index++;
+			break;
 	}
+	return index;
 }
 
 function tokenizeString(input: string, tokens: Token[], index: number): number {
@@ -58,6 +63,10 @@ function tokenizeDateTime(input: string, tokens: Token[], index: number): number
 	return 0;
 }
 
+function isNumberChar(char: string | undefined): boolean {
+	return char !== undefined && ((char >= '0' && char <= '9') || char === '.' );
+}
+
 function tokenizeNumber(char: string, input: string, tokens: Token[], index: number): number {
 	let num = '';
 	if (char === '-') {
@@ -66,7 +75,7 @@ function tokenizeNumber(char: string, input: string, tokens: Token[], index: num
 	}
 	while (index < input.length) {
 		const c = input[index];
-		if (!c || !((c >= '0' && c <= '9') || c === '.')) {
+		if (!isNumberChar(c)) {
 			break;
 		}
 		num += c;
@@ -76,11 +85,15 @@ function tokenizeNumber(char: string, input: string, tokens: Token[], index: num
 	return index;
 }
 
+function isIdentifierChar(char: string | undefined): boolean {
+	return char !== undefined && ((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || (char >= '0' && char <= '9') || char === '_');
+}
+
 function tokenizeIdentifier(input: string, tokens: Token[], index: number): number {
 	let ident = '';
 	while (index < input.length) {
 		const c = input[index];
-		if (!c || !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '_')) {
+		if (!isIdentifierChar(c)) {
 			break;
 		}
 		ident += c;

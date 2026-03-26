@@ -1,8 +1,12 @@
 import type {AstNode} from './tokenTypes';
 
+function isStandardToString(v: object): boolean {
+	return (v as {toString?: unknown}).toString === Object.prototype.toString;
+}
+
 /** Returns true for non-null objects with a custom toString(), excluding Date (handled separately). */
 function isCustomObject(v: unknown): boolean {
-	return v !== null && typeof v === 'object' && !(v instanceof Date) && (v as {toString?: unknown}).toString !== Object.prototype.toString;
+	return v !== null && typeof v === 'object' && !(v instanceof Date) && !isStandardToString(v);
 }
 
 function resolveProperty(data: Record<string, unknown>, path: string[]): unknown {
@@ -99,8 +103,17 @@ function toMs(v: unknown): number {
 	return Number.NaN;
 }
 
-function toStr(v: unknown): unknown {
-	return isCustomObject(v) ? String(v) : v;
+/**
+ * Returns result of possibly coercing a value to a string.
+ * @param value The value to potentially coerce to a string.
+ * @returns An object indicating whether coercion was performed and the resulting value if applicable.
+ */
+function coerceToStringResult(value: unknown): {ok: true; value: string} | {ok: false} {
+	// Coerce objects with custom toString() to string (like MongoDB ObjectId instance)
+	if (isCustomObject(value)) {
+		return {ok: true, value: String(value)};
+	}
+	return {ok: false};
 }
 
 /**
@@ -120,14 +133,16 @@ export function evaluate(node: AstNode, data: Record<string, unknown>): unknown 
 		case 'comparison': {
 			let left = evaluate(node.left, data);
 			let right = evaluate(node.right, data);
+			const leftCoercionRes = coerceToStringResult(left);
+			const rightCoercionRes = coerceToStringResult(right);
 			// Tier 1: Coerce Date instances — convert both sides to ms
 			if (left instanceof Date || right instanceof Date) {
 				left = toMs(left);
 				right = toMs(right);
-			} else if (isCustomObject(left) || isCustomObject(right)) {
-				// Tier 2: Objects with a custom toString() (e.g. Mongoose ObjectId) — coerce to string
-				left = toStr(left);
-				right = toStr(right);
+			} else if (leftCoercionRes.ok || rightCoercionRes.ok) {
+				// Tier 2: Objects with a custom coerce to string
+				left = leftCoercionRes.ok ? leftCoercionRes.value : left;
+				right = rightCoercionRes.ok ? rightCoercionRes.value : right;
 			}
 			const operator = node.operator;
 			switch (operator) {
