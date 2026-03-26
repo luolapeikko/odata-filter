@@ -294,8 +294,8 @@ describe('createODataFilter', () => {
 		it('shuold return false if property is not matching to data', () => {
 			const filter = createODataFilter<any>("name eq 'John'");
 			expect(filter({age: 30})).toBe(false);
-      expect(filter({name: null})).toBe(false);
-      expect(filter({})).toBe(false);
+			expect(filter({name: null})).toBe(false);
+			expect(filter({})).toBe(false);
 		});
 		it('should throw on malformed filter syntax', () => {
 			expect(() => createODataFilter('name eq John'), 'missing quotes around string literal').toThrow();
