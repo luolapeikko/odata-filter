@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/package.json",
   "name": "@luolapeikko/odata-query-filter",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "OData $filter string parser and evaluator",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
