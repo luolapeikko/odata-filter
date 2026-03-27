@@ -1,4 +1,4 @@
-# @luolapeikko/odata-filter
+# @luolapeikko/odata-query-filter
 
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
 [![Maintainability](https://qlty.sh/gh/luolapeikko/projects/odata-query-filter/maintainability.svg)](https://qlty.sh/gh/luolapeikko/projects/odata-query-filter)
@@ -22,7 +22,7 @@ console.log(personList.filter(personFilter)); // [{name: 'John'}]
 ```
 
 ```typescript
-import { createODataFilter } from "@luolapeikko/odata-filter";
+import { createODataFilter } from "@luolapeikko/odata-query-filter";
 
 const handleRequest = (req, res, next) => {
   const dataArray: DataType[] = await getSomeData();
